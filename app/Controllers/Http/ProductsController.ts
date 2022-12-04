@@ -12,8 +12,8 @@ export default class ProductsController {
 
   public async store({}: HttpContextContract) {}
 
-  public async show({ response }: HttpContextContract) {
-    const product = await Product.findBy('id', 1)
+  public async show({ request, response }: HttpContextContract) {
+    const product = await Product.findBy('id', request.param('id'))
 
     return response.json(product)
   }
