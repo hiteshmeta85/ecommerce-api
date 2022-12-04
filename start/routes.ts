@@ -24,7 +24,9 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.resource('products', 'ProductsController')
+Route.post('login', 'AuthController.login')
+Route.post('logout', 'AuthController.logout')
 Route.resource('users', 'UsersController')
+Route.resource('products', 'ProductsController')
 Route.resource('cart-items', 'CartItemsController')
 Route.resource('addresses', 'AddressesController')
