@@ -17,6 +17,12 @@ export default class CartItem extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  @column()
+  public productId: number
+
+  @column()
+  public userId: number
+
   @belongsTo(() => Product)
   public product: BelongsTo<typeof Product>
 

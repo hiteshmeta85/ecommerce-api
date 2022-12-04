@@ -10,6 +10,9 @@ export default class Address extends BaseModel {
   @column()
   public address: string
 
+  @column()
+  public userId: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
