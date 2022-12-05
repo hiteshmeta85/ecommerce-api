@@ -5,7 +5,7 @@ export default class ProductsController {
   public async index({ response }: HttpContextContract) {
     const products = await Product.all()
 
-    return response.json(products)
+    return response.send({ data: products, message: 'Products' })
   }
 
   public async create({}: HttpContextContract) {}
@@ -15,7 +15,7 @@ export default class ProductsController {
   public async show({ request, response }: HttpContextContract) {
     const product = await Product.findBy('id', request.param('id'))
 
-    return response.json(product)
+    return response.send({ data: product, message: 'Product' })
   }
 
   public async edit({}: HttpContextContract) {}
