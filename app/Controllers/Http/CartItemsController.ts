@@ -6,7 +6,7 @@ import Status from 'Contracts/Enums/Status'
 export default class CartItemsController {
   public async index({ response, auth }: HttpContextContract) {
     const cartItems = await CartItem.query()
-      .where({ userId: auth.use('api').user!.id, status: 'IDLE' })
+      .where({ userId: auth.use('api').user!.id, status: Status.IDLE })
       .preload('product')
 
     return response.send({ data: cartItems, message: 'Cart items' })
@@ -15,16 +15,20 @@ export default class CartItemsController {
   public async create({}: HttpContextContract) {}
 
   public async store({ request, response, auth }: HttpContextContract) {
-    const availableProductQuantity = await Product.find(request.input('product_id'))
+    const product = await Product.find(request.input('product_id'))
 
-    if (request.input('quantity') <= availableProductQuantity!.quantity) {
-      const cartItem = await CartItem.create({
-        userId: auth.use('api').user!.id,
-        productId: request.input('product_id'),
-        quantity: request.input('quantity'),
-      })
+    if (request.input('quantity') <= product!.quantity) {
+      const cartItem = await CartItem.updateOrCreate(
+        {
+          userId: auth.use('api').user!.id,
+          productId: request.input('product_id'),
+        },
+        {
+          quantity: request.input('quantity'),
+        }
+      )
 
-      return response.send({ data: cartItem, message: 'Cart item added' })
+      return response.send({ data: cartItem, message: 'Cart updated' })
     } else {
       return response.send({ data: null, message: 'Not enough quantity' })
     }
@@ -44,13 +48,14 @@ export default class CartItemsController {
     const product = await Product.find(request.input('product_id'))
 
     if (request.input('quantity') <= product!.quantity) {
-      await CartItem.query()
+      const cartItem = await CartItem.query()
         .where({ id: request.input('id') })
         .update({ quantity: request.input('quantity') })
+        .returning('*')
 
-      return response.json({ message: 'Cart item updated' })
+      return response.send({ data: cartItem, message: 'Cart item updated' })
     } else {
-      return response.json({ message: 'Not enough quantity' })
+      return response.send({ data: null, message: 'Not enough quantity' })
     }
   }
 
