@@ -9,7 +9,7 @@ export default class CartItemsController {
       .where({ userId: auth.use('api').user!.id, status: 'IDLE' })
       .preload('product')
 
-    return response.json(cartItems)
+    return response.send({ data: cartItems, message: 'Cart items' })
   }
 
   public async create({}: HttpContextContract) {}
@@ -24,9 +24,9 @@ export default class CartItemsController {
         quantity: request.input('quantity'),
       })
 
-      return response.json(cartItem)
+      return response.send({ data: cartItem, message: 'Cart item added' })
     } else {
-      return response.json({ message: 'Not enough quantity' })
+      return response.send({ data: null, message: 'Not enough quantity' })
     }
   }
 
@@ -55,4 +55,15 @@ export default class CartItemsController {
   }
 
   public async destroy({}: HttpContextContract) {}
+
+  public async count({ response, auth }: HttpContextContract) {
+    const count = await CartItem.query()
+      .count('id')
+      .where({ status: 'IDLE', userId: auth.use('api').user!.id })
+
+    return response.send({
+      data: parseInt(count[0].$extras.count),
+      message: `Cart items count is ${count[0].$extras.count}`,
+    })
+  }
 }

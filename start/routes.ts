@@ -24,9 +24,14 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.post('login', 'AuthController.login')
-Route.post('logout', 'AuthController.logout')
+Route.group(() => {
+  Route.post('/login', 'AuthController.login')
+  Route.post('/logout', 'AuthController.logout').middleware('auth')
+  Route.get('/validate', 'AuthController.show').middleware('auth')
+}).prefix('/auth')
 Route.resource('users', 'UsersController')
 Route.resource('products', 'ProductsController')
+Route.get('cart-items/count', 'CartItemsController.count').middleware('auth')
 Route.resource('cart-items', 'CartItemsController').middleware({ '*': ['auth'] })
+Route.resource('orders', 'OrdersController').middleware({ '*': ['auth'] })
 Route.resource('addresses', 'AddressesController').middleware({ '*': ['auth'] })

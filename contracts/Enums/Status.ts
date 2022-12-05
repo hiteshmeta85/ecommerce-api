@@ -1,8 +1,8 @@
 enum Status {
-  IDLE = 1,
-  SHIPPING = 2,
-  DELIVERED = 3,
-  CANCELLED = 4,
+  IDLE = 'IDLE',
+  SHIPPING = 'SHIPPING',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
 }
 
 export default Status
