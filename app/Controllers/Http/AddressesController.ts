@@ -19,15 +19,7 @@ export default class AddressesController {
     return response.send({ data: address, message: 'Address Created' })
   }
 
-  public async show({ request, auth, response }: HttpContextContract) {
-    const addressId = request.param('id')
-
-    const address = await Address.query()
-      .where({ id: addressId, userId: auth.use('api').user!.id })
-      .firstOrFail()
-
-    return response.send({ data: address, message: 'Address Fetched' })
-  }
+  public async show({}: HttpContextContract) {}
 
   public async edit({}: HttpContextContract) {}
 

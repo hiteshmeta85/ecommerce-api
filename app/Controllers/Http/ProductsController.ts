@@ -13,7 +13,7 @@ export default class ProductsController {
   public async store({}: HttpContextContract) {}
 
   public async show({ request, response }: HttpContextContract) {
-    const product = await Product.findBy('id', request.param('id'))
+    const product = await Product.find(request.param('id'))
 
     return response.send({ data: product, message: 'Product' })
   }
