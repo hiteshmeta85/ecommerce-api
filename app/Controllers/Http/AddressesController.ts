@@ -5,7 +5,7 @@ export default class AddressesController {
   public async index({ response, auth }: HttpContextContract) {
     const addresses = await Address.query().where({ userId: auth.use('api').user!.id })
 
-    return response.json(addresses)
+    return response.send({ data: addresses, message: 'Addresses Fetched' })
   }
 
   public async create({}: HttpContextContract) {}
@@ -16,25 +16,34 @@ export default class AddressesController {
       address: request.input('address'),
     })
 
-    return response.json(address)
+    return response.send({ data: address, message: 'Address Created' })
   }
 
-  public async show({}: HttpContextContract) {}
+  public async show({ request, auth, response }: HttpContextContract) {
+    const addressId = request.param('id')
+
+    const address = await Address.query()
+      .where({ id: addressId, userId: auth.use('api').user!.id })
+      .firstOrFail()
+
+    return response.send({ data: address, message: 'Address Fetched' })
+  }
 
   public async edit({}: HttpContextContract) {}
 
   public async update({ request, response, auth }: HttpContextContract) {
-    await Address.query()
+    const address = await Address.query()
       .where({ id: request.param('id'), userId: auth.use('api').user!.id })
       .update({ address: request.input('address') })
+      .returning('*')
 
-    return response.json({ message: 'Address Updated' })
+    return response.send({ data: address, message: 'Address Updated' })
   }
 
   public async destroy({ request, response }: HttpContextContract) {
     const address = await Address.findOrFail(request.param('id'))
     await address.delete()
 
-    return response.json({ message: 'Address Deleted' })
+    return response.send({ data: null, message: 'Address Deleted' })
   }
 }

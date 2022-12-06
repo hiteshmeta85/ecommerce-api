@@ -1,12 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CartItem from 'App/Models/CartItem'
 import Product from 'App/Models/Product'
-import Status from 'Contracts/Enums/Status'
 
 export default class CartItemsController {
   public async index({ response, auth }: HttpContextContract) {
     const cartItems = await CartItem.query()
-      .where({ userId: auth.use('api').user!.id, status: Status.IDLE })
+      .where({ userId: auth.use('api').user!.id })
       .preload('product')
 
     return response.send({ data: cartItems, message: 'Cart items' })
@@ -39,12 +38,6 @@ export default class CartItemsController {
   public async edit({}: HttpContextContract) {}
 
   public async update({ request, response }: HttpContextContract) {
-    const cartItem = await CartItem.find(request.input('id'))
-
-    if (cartItem!.status !== Status.IDLE) {
-      return response.json({ message: 'You can not update this item' })
-    }
-
     const product = await Product.find(request.input('product_id'))
 
     if (request.input('quantity') <= product!.quantity) {
@@ -64,7 +57,7 @@ export default class CartItemsController {
   public async count({ response, auth }: HttpContextContract) {
     const count = await CartItem.query()
       .count('id')
-      .where({ status: 'IDLE', userId: auth.use('api').user!.id })
+      .where({ userId: auth.use('api').user!.id })
 
     return response.send({
       data: parseInt(count[0].$extras.count),
