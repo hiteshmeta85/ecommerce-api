@@ -37,12 +37,14 @@ export default class CartItemsController {
 
   public async edit({}: HttpContextContract) {}
 
-  public async update({ request, response }: HttpContextContract) {
-    const product = await Product.find(request.input('product_id'))
+  public async update({ request, response, auth }: HttpContextContract) {
+    const cartItem = await CartItem.findOrFail(request.param('id'))
+
+    const product = await Product.find(cartItem!.productId)
 
     if (request.input('quantity') <= product!.quantity) {
       const cartItem = await CartItem.query()
-        .where({ id: request.input('id') })
+        .where({ id: request.param('id'), userId: auth.use('api').user!.id })
         .update({ quantity: request.input('quantity') })
         .returning('*')
 
